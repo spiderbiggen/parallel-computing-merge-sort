@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.StringTokenizer;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -35,7 +36,7 @@ public class CSVParser {
             if (bufferedReader.ready()) {
                 var line = bufferedReader.readLine();
                 if (line.isBlank()) return null;
-                headers = line.split(",");
+                headers = line.split(";");
             }
             // How 🤔
             if (headers == null || headers.length == 0) return null;
@@ -44,7 +45,7 @@ public class CSVParser {
             while (bufferedReader.ready()) {
                 var line = bufferedReader.readLine();
                 if (line.isBlank()) continue;
-                String[] parts = line.split(",");
+                String[] parts = line.split(";");
                 if (parts.length < 1) continue;
 
                 for (int i = 0; i < parts.length && i < headers.length; i++) {
@@ -78,8 +79,8 @@ public class CSVParser {
         }
 
         public Duration getDuration(String key) {
+            final var value = get(key);
             try {
-                final var value = get(key);
                 var duration = Duration.ZERO;
                 var values = value.split(":");
                 duration = duration.plusSeconds(parseInt(arrayValueAt(values, values.length - 1), 0));
@@ -87,7 +88,7 @@ public class CSVParser {
                 duration = duration.plusHours(parseInt(arrayValueAt(values, values.length - 3), 0));
                 duration = duration.plusDays(parseInt(arrayValueAt(values, values.length - 4), 0));
                 return duration;
-            } catch (DateTimeParseException e) {
+            } catch (DateTimeParseException | NullPointerException e) {
                 e.printStackTrace();
                 return null;
             }
