@@ -1,6 +1,7 @@
 package computing.parallel.sort;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MergeSort<T extends Comparable<T>> implements Sorter<T> {

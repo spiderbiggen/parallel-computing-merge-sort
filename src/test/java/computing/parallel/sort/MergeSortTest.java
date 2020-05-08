@@ -12,20 +12,17 @@ import static org.junit.Assert.assertEquals;
 
 public class MergeSortTest {
 
-    private static final int INITIAL_CAPACITY = 20;
-    private List<Integer> unsorted;
-    private List<Integer> sorted;
-    private Sorter<Integer> sorter;
+    private List<Runner> unsorted;
+    private List<Runner> sorted;
+    private Sorter<Runner> sorter;
+
     @Before
     public void setUp() throws Exception {
         sorter = new MergeSort<>();
-        var random = new Random();
-        unsorted = new ArrayList<>(INITIAL_CAPACITY);
-        for (int i = 0; i < INITIAL_CAPACITY; i++) {
-            unsorted.add(random.nextInt());
-        }
-        sorted = new ArrayList<>(unsorted);
-        Collections.sort(sorted);
+        unsorted = CSVParser.parse(758683, MergeSortTest.class.getResourceAsStream("/csv/events/events_758683.csv"), Runner::new);
+        sorted = CSVParser.parse(758683, MergeSortTest.class.getResourceAsStream("/csv/events/events_758683_sorted.csv"), Runner::new);
+        assert unsorted != null;
+        assert sorted != null;
     }
 
     @Test
