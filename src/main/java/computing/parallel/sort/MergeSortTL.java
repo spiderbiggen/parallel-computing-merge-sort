@@ -8,8 +8,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class MergeSortTL<T extends Comparable<T>> extends MergeSortBase<T> implements Sorter<T> {
-//    public static final int MAX_THREADS = Runtime.getRuntime().availableProcessors();
-    public static final int MAX_THREADS = 4;
+    public static final int MAX_THREADS = Runtime.getRuntime().availableProcessors();
+    //    public static final int MAX_THREADS = 4;
+    public static final int MAX_DEPTH = (int) Math.ceil(Math.log(MAX_THREADS) / Math.log(2));
     private final ExecutorService executor = Executors.newCachedThreadPool();
 
     @Override
@@ -24,7 +25,7 @@ public class MergeSortTL<T extends Comparable<T>> extends MergeSortBase<T> imple
     private List<T> sort(List<T> list, int depth) throws ExecutionException, InterruptedException {
         if (list.size() <= 1) return list;
         Map<String, List<T>> lists = split(list);
-        if (Math.pow(2.0, depth)  <= MAX_THREADS) {
+        if (depth <= MAX_DEPTH) {
             Future<List<T>> left = executor.submit(() -> sort(lists.get("left"), depth + 1));
             Future<List<T>> right = executor.submit(() -> sort(lists.get("right"), depth + 1));
             return merge(left.get(), right.get());
