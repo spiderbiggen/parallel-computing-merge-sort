@@ -1,34 +1,35 @@
 package computing.parallel.sort;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Random;
-import static org.hamcrest.CoreMatchers.*;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 public class MergeSortTest {
 
-    private List<Runner> unsorted;
-    private List<Runner> sorted;
-    private Sorter<Runner> sorter;
+    private static List<Runner> unsorted;
+    private static List<Runner> sorted;
 
-    @Before
-    public void setUp() throws Exception {
-        sorter = new MergeSort<>();
+    @BeforeClass
+    public static void beforeClass() throws Exception {
         unsorted = CSVParser.parse(MergeSortTest.class.getResourceAsStream("/csv/events/events_758674.csv"), Runner::new);
         sorted = CSVParser.parse(MergeSortTest.class.getResourceAsStream("/csv/events/events_758674_sorted.csv"), Runner::new);
         assert unsorted != null;
         assert sorted != null;
     }
 
+    @Before
+    public void setUp() throws Exception {
+        System.gc();
+    }
+
+
     @Test
     public void sort() {
+        Sorter<Runner> sorter = new MergeSort<>();
         final long start = System.nanoTime();
         final var result = sorter.sort(unsorted);
         final long end = System.nanoTime();
@@ -40,7 +41,13 @@ public class MergeSortTest {
     }
 
     @Test
-    public void testSort() {
+    public void sortAsync() {
+        Sorter<Runner> sorter = new MergeSortTL<>();
+        final long start = System.nanoTime();
+        final var result = sorter.sort(unsorted);
+        final long end = System.nanoTime();
+        System.out.printf("Sorted in %dns%n", end - start);
+        assertEquals(result, sorted);
     }
 
     @Test
