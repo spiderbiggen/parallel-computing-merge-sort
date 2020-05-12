@@ -10,10 +10,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class MergeSortTL<T extends Comparable<T>> extends MergeSortBase<T> implements Sorter<T> {
-//    public static final int MAX_THREADS = Runtime.getRuntime().availableProcessors();
-    public static final int MAX_THREADS = 4;
-    public static final int MAX_DEPTH = (int) Math.ceil(Math.log(MAX_THREADS) / Math.log(2));
-
     @Override
     public List<T> sort(List<T> list) {
         try {

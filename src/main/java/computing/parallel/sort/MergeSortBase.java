@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 public class MergeSortBase<T extends Comparable<T>> {
+    public static final int MAX_THREADS = Runtime.getRuntime().availableProcessors();
+//    public static final int MAX_THREADS = 4;
+    public static final int MAX_DEPTH = (int) Math.ceil(Math.log(MAX_THREADS) / Math.log(2));
+
     Map<String, List<T>> split(List<T> baseList) {
         final int middleIndex = findMiddle(baseList);
         HashMap<String, List<T>> lists = new HashMap<>();
