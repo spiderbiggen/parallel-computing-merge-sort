@@ -30,10 +30,10 @@ public class MergeSortTest {
     @Test
     public void sort() {
         Sorter<Runner> sorter = new MergeSort<>();
-        final long start = System.nanoTime();
+        final long start = System.currentTimeMillis();
         final var result = sorter.sort(unsorted);
-        final long end = System.nanoTime();
-        System.out.printf("Sorted in %dns%n", end - start);
+        final long end = System.currentTimeMillis();
+        System.out.printf("Sorted sequential in %dms%n", end - start);
         assertEquals(result.size(), sorted.size());
         for (int i = 0; i < result.size(); i++) {
             assertEquals(result.get(i), sorted.get(i));
@@ -41,17 +41,23 @@ public class MergeSortTest {
     }
 
     @Test
-    public void sortAsync() {
+    public void sortTL() {
         Sorter<Runner> sorter = new MergeSortTL<>();
-        final long start = System.nanoTime();
+        final long start = System.currentTimeMillis();
         final var result = sorter.sort(unsorted);
-        final long end = System.nanoTime();
-        System.out.printf("Sorted in %dns%n", end - start);
+        final long end = System.currentTimeMillis();
+        System.out.printf("Sorted threads in %dms%n", end - start);
         assertEquals(result, sorted);
     }
 
     @Test
-    public void findMiddle() {
+    public void sortExecutor() {
+        Sorter<Runner> sorter = new MergeSortExecutor<>();
+        final long start = System.currentTimeMillis();
+        final var result = sorter.sort(unsorted);
+        final long end = System.currentTimeMillis();
+        System.out.printf("Sorted executor in %dms%n", end - start);
+        assertEquals(result, sorted);
     }
 
     @Test

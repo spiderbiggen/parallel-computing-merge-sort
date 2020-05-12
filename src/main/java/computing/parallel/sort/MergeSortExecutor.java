@@ -6,13 +6,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
-public class MergeSortTL<T extends Comparable<T>> extends MergeSortBase<T> implements Sorter<T> {
+public class MergeSortExecutor<T extends Comparable<T>> extends MergeSortBase<T> implements Sorter<T> {
 //    public static final int MAX_THREADS = Runtime.getRuntime().availableProcessors();
     public static final int MAX_THREADS = 4;
     public static final int MAX_DEPTH = (int) Math.ceil(Math.log(MAX_THREADS) / Math.log(2));
+    private final ExecutorService executor = Executors.newCachedThreadPool();
 
     @Override
     public List<T> sort(List<T> list) {
@@ -27,40 +26,12 @@ public class MergeSortTL<T extends Comparable<T>> extends MergeSortBase<T> imple
         if (list.size() <= 1) return list;
         Map<String, List<T>> lists = split(list);
         if (depth <= MAX_DEPTH) {
-            SortRunnable sr = new SortRunnable(lists.get("left"), depth + 1);
-            Thread t1 = new Thread(sr);
-            t1.start();
+            Future<List<T>> left = executor.submit(() -> sort(lists.get("left"), depth + 1));
             List<T> right = sort(lists.get("right"), depth + 1);
-            t1.join();
-            return merge(sr.getResult(), right);
+            return merge(left.get(), right);
         }
         List<T> left = sort(lists.get("left"), depth + 1);
         List<T> right = sort(lists.get("right"), depth + 1);
         return merge(left, right);
-    }
-
-    private class SortRunnable implements Runnable {
-
-        private List<T> result = null;
-        private final List<T> input;
-        private final int depth;
-
-        public SortRunnable(List<T> input, int depth) {
-            this.input = input;
-            this.depth = depth;
-        }
-
-        @Override
-        public void run() {
-            try {
-                result = sort(input, depth);
-            } catch (ExecutionException | InterruptedException e) {
-                // this shouldn't happen
-            }
-        }
-
-        public List<T> getResult() {
-            return result;
-        }
     }
 }

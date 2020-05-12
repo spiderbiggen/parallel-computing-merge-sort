@@ -19,8 +19,9 @@ public class MergeSortIntTest {
     @BeforeClass
     public static void setUp() throws Exception {
         Random random = new Random(5454);
-        final Integer[] ints = new Integer[1_000_000];
+        final Integer[] ints = new Integer[1024000];
         Arrays.parallelSetAll(ints, operand -> random.nextInt());
+        System.out.printf("Sorting %d%n", ints.length);
         unsorted = Arrays.asList(ints);
         sorted = new ArrayList<>(unsorted);
         Collections.sort(sorted);
@@ -30,10 +31,10 @@ public class MergeSortIntTest {
     public void sort() {
         System.gc();
         Sorter<Integer> sorter = new MergeSort<>();
-        final long start = System.nanoTime();
+        final long start = System.currentTimeMillis();
         final var result = sorter.sort(unsorted);
-        final long end = System.nanoTime();
-        System.out.printf("Sorted in %dns%n", end - start);
+        final long end = System.currentTimeMillis();
+        System.out.printf("Sorted Sequential in %dms%n", end - start);
         assertEquals(result.size(), sorted.size());
         for (int i = 0; i < result.size(); i++) {
             assertEquals(result.get(i), sorted.get(i));
@@ -41,13 +42,13 @@ public class MergeSortIntTest {
     }
 
     @Test
-    public void sortAsync() {
+    public void sortTL() {
         System.gc();
         Sorter<Integer> sorter = new MergeSortTL<>();
-        final long start = System.nanoTime();
+        final long start = System.currentTimeMillis();
         final var result = sorter.sort(unsorted);
-        final long end = System.nanoTime();
-        System.out.printf("Sorted in %dns%n", end - start);
+        final long end = System.currentTimeMillis();
+        System.out.printf("Sorted threads in %dms%n", end - start);
         assertEquals(result.size(), sorted.size());
         for (int i = 0; i < result.size(); i++) {
             assertEquals(result.get(i), sorted.get(i));
@@ -55,7 +56,14 @@ public class MergeSortIntTest {
     }
 
     @Test
-    public void findMiddle() {
+    public void sortExecutor() {
+        System.gc();
+        Sorter<Integer> sorter = new MergeSortExecutor<>();
+        final long start = System.currentTimeMillis();
+        final var result = sorter.sort(unsorted);
+        final long end = System.currentTimeMillis();
+        System.out.printf("Sorted executor in %dms%n", end - start);
+        assertEquals(result, sorted);
     }
 
     @Test
