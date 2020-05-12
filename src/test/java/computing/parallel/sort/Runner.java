@@ -1,5 +1,7 @@
 package computing.parallel.sort;
 
+import computing.parallel.sort.util.CSVParser;
+
 import java.time.Duration;
 import java.util.Objects;
 

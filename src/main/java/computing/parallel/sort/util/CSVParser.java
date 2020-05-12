@@ -1,34 +1,27 @@
-package computing.parallel.sort;
+package computing.parallel.sort.util;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.Duration;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
-import java.util.StringTokenizer;
-import java.util.concurrent.Executors;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class CSVParser {
     private CSVParser() {
         // only static methods
     }
 
-    public static <T> List<T> parse(File file, Function<CSVObject, T> converter) throws IOException {
-        try (InputStream stream = new FileInputStream(file)) {
-            return parse(stream, converter);
-        }
+    public static <T> List<T> parse(InputStream in, Function<CSVObject, T> converter) throws IOException {
+        return parse(in, converter, ',');
     }
 
-    public static <T> List<T> parse(InputStream in, Function<CSVObject, T> converter) throws IOException {
+    public static <T> List<T> parse(InputStream in, Function<CSVObject, T> converter, char delimiter) throws IOException {
         List<T> result = new ArrayList<>();
         String[] headers = null;
         try (InputStreamReader reader = new InputStreamReader(in);
@@ -36,26 +29,60 @@ public class CSVParser {
             if (bufferedReader.ready()) {
                 var line = bufferedReader.readLine();
                 if (line.isBlank()) return null;
-                headers = line.split(";");
+                headers = line.split(String.valueOf(delimiter));
             }
             // How 🤔
             if (headers == null || headers.length == 0) return null;
 
-            CSVObject map = new CSVObject();
             while (bufferedReader.ready()) {
-                var line = bufferedReader.readLine();
-                if (line.isBlank()) continue;
-                String[] parts = line.split(";");
-                if (parts.length < 1) continue;
-
-                for (int i = 0; i < parts.length && i < headers.length; i++) {
-                    map.put(headers[i], parts[i]);
-                }
+                CSVObject map = parseLine(headers, bufferedReader, delimiter);
+                System.out.println(map);
                 result.add(converter.apply(map));
                 map.clear();
             }
         }
         return result;
+    }
+
+    private static CSVObject parseLine(String[] headers, BufferedReader reader, char delimiter) throws IOException {
+        int i = 0;
+        boolean escaped = false, string = false;
+        CSVObject object = new CSVObject();
+        StringBuilder current = new StringBuilder();
+        while (reader.ready() && i < headers.length) {
+            int character = reader.read();
+            if (escaped) {
+                current.append((char) character);
+                escaped = false;
+                continue;
+            }
+            if (character == '\\') {
+                escaped = true;
+                continue;
+            }
+            if (string) {
+                if (character == '"') {
+                    string = false;
+                    continue;
+                }
+                current.append((char) character);
+                continue;
+            }
+            if (character == '"') {
+                string = true;
+                continue;
+            }
+            if (character == delimiter || character == '\n') {
+                object.put(headers[i++], current.toString());
+                current.setLength(0); // clear string builder;
+                continue;
+            }
+            current.append((char) character);
+        }
+        if (current.length() != 0 && i < headers.length) {
+            object.put(headers[i], current.toString());
+        }
+        return object;
     }
 
     public static class CSVObject extends HashMap<String, String> {

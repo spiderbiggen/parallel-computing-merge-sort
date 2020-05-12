@@ -1,5 +1,6 @@
 package computing.parallel.sort;
 
+import computing.parallel.sort.util.CSVParser;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
