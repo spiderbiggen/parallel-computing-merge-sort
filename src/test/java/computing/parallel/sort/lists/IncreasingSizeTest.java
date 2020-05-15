@@ -54,11 +54,19 @@ public abstract class IncreasingSizeTest {
 
     @Test
     public void sort() {
-        System.gc();
-        final long start = System.currentTimeMillis();
-        List<Runner> result = sorter.sort(input);
-        final long end = System.currentTimeMillis();
-        assertEquals(result, expected);
-        System.out.printf("%d;%d%n", input.size(), end - start);
+        System.out.printf("%d%n", input.size());
+        long sum = 0;
+        for (int i = 0; i < 10; i++) {
+            System.gc();
+            final long start = System.currentTimeMillis();
+            List<Runner> result = sorter.sort(input);
+            final long end = System.currentTimeMillis();
+            assertEquals(result, expected);
+            final long totalTime = end - start;
+            sum += totalTime;
+            System.out.printf("%d%n", totalTime);
+        }
+        System.out.printf("Average: %.2f, Total: %d%n", sum / 10f, sum);
+
     }
 }
