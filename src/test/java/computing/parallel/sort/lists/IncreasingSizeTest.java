@@ -5,7 +5,6 @@ import computing.parallel.sort.Runner;
 import computing.parallel.sort.Sorter;
 import computing.parallel.sort.util.CSVParser;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.io.IOException;
@@ -36,7 +35,7 @@ public abstract class IncreasingSizeTest {
                 {readResource("/events_128000.csv"), readResource("/events_128000_sorted.csv")},
                 {readResource("/events_256000.csv"), readResource("/events_256000_sorted.csv")},
                 {readResource("/events_512000.csv"), readResource("/events_512000_sorted.csv")},
-        });
+                });
     }
 
     private static List<Runner> readResource(String filename) {

@@ -3,7 +3,7 @@ package computing.parallel.sort;
 import java.util.List;
 import java.util.Map;
 
-public class MergeSort<T extends Comparable<T>> extends MergeSortBase<T> implements Sorter<T>  {
+public class MergeSort<T extends Comparable<T>> extends MergeSortBase<T> implements Sorter<T> {
 
     @Override
     public List<T> sort(List<T> list) {
