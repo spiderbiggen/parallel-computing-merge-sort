@@ -16,20 +16,15 @@ public class MergeSortTest {
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        unsorted = CSVParser.parse(MergeSortTest.class.getResourceAsStream("/csv/events/events_758674.csv"), Runner::new);
-        sorted = CSVParser.parse(MergeSortTest.class.getResourceAsStream("/csv/events/events_758674_sorted.csv"), Runner::new);
+        unsorted = CSVParser.parse(MergeSortTest.class.getResourceAsStream("/events_758675.csv"), Runner::new);
+        sorted = CSVParser.parse(MergeSortTest.class.getResourceAsStream("/events_758675_sorted.csv"), Runner::new);
         assert unsorted != null;
         assert sorted != null;
     }
 
-    @Before
-    public void setUp() throws Exception {
-        System.gc();
-    }
-
-
     @Test
     public void sort() {
+        System.gc();
         Sorter<Runner> sorter = new MergeSort<>();
         final long start = System.currentTimeMillis();
         final var result = sorter.sort(unsorted);
@@ -43,6 +38,7 @@ public class MergeSortTest {
 
     @Test
     public void sortTL() {
+        System.gc();
         Sorter<Runner> sorter = new MergeSortTL<>();
         final long start = System.currentTimeMillis();
         final var result = sorter.sort(unsorted);
@@ -53,6 +49,7 @@ public class MergeSortTest {
 
     @Test
     public void sortExecutor() {
+        System.gc();
         Sorter<Runner> sorter = new MergeSortExecutor<>();
         final long start = System.currentTimeMillis();
         final var result = sorter.sort(unsorted);

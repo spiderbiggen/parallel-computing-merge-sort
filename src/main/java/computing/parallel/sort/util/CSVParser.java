@@ -36,7 +36,6 @@ public class CSVParser {
 
             while (bufferedReader.ready()) {
                 CSVObject map = parseLine(headers, bufferedReader, delimiter);
-                System.out.println(map);
                 result.add(converter.apply(map));
                 map.clear();
             }
