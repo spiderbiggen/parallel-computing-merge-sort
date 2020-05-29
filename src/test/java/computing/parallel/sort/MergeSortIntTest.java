@@ -67,6 +67,13 @@ public class MergeSortIntTest {
     }
 
     @Test
-    public void merge() {
+    public void sortForkJoin() {
+        System.gc();
+        Sorter<Integer> sorter = new MergeSortForkJoin<>();
+        final long start = System.currentTimeMillis();
+        final var result = sorter.sort(unsorted);
+        final long end = System.currentTimeMillis();
+        System.out.printf("Sorted executor in %dms%n", end - start);
+        assertEquals(result, sorted);
     }
 }
