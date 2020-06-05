@@ -1,5 +1,6 @@
 package computing.parallel.sort.lists;
 
+import computing.parallel.sort.MergeSortBase;
 import computing.parallel.sort.MergeSortTest;
 import computing.parallel.sort.Runner;
 import computing.parallel.sort.Sorter;
@@ -9,33 +10,35 @@ import org.junit.runners.Parameterized;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 public abstract class IncreasingSizeTest {
 
     protected Sorter<Runner> sorter;
     private final List<Runner> input;
-    private final List<Runner> expected;
 
     @Parameterized.Parameters
-    public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-                {readResource("/events_001000.csv"), readResource("/events_001000_sorted.csv")},
-                {readResource("/events_002000.csv"), readResource("/events_002000_sorted.csv")},
-                {readResource("/events_004000.csv"), readResource("/events_004000_sorted.csv")},
-                {readResource("/events_008000.csv"), readResource("/events_008000_sorted.csv")},
-                {readResource("/events_016000.csv"), readResource("/events_016000_sorted.csv")},
-                {readResource("/events_032000.csv"), readResource("/events_032000_sorted.csv")},
-                {readResource("/events_064000.csv"), readResource("/events_064000_sorted.csv")},
-                {readResource("/events_128000.csv"), readResource("/events_128000_sorted.csv")},
-                {readResource("/events_256000.csv"), readResource("/events_256000_sorted.csv")},
-                {readResource("/events_512000.csv"), readResource("/events_512000_sorted.csv")},
-                });
+    public static List<String> data() {
+         return Arrays.asList(
+                "/events_001000.csv",
+                "/events_002000.csv",
+                "/events_004000.csv",
+                "/events_008000.csv",
+                "/events_016000.csv",
+                "/events_032000.csv",
+                "/events_064000.csv",
+                "/events_128000.csv",
+                "/events_256000.csv",
+                "/events_512000.csv"
+        );
     }
 
     private static List<Runner> readResource(String filename) {
@@ -47,13 +50,13 @@ public abstract class IncreasingSizeTest {
         }
     }
 
-    public IncreasingSizeTest(List<Runner> input, List<Runner> expected) {
-        this.input = input;
-        this.expected = expected;
+    public IncreasingSizeTest(String input) {
+        this.input = readResource(input);
     }
 
     @Test
     public void sort() {
+        System.out.printf("Running tests using %d threads%n", MergeSortBase.MAX_THREADS);
         System.out.printf("%d%n", input.size());
         long sum = 0;
         for (int i = 0; i < 10; i++) {
@@ -61,12 +64,14 @@ public abstract class IncreasingSizeTest {
             final long start = System.currentTimeMillis();
             List<Runner> result = sorter.sort(input);
             final long end = System.currentTimeMillis();
-            assertEquals(result, expected);
+            if(result == null) {
+                System.out.println("using result");
+            }
             final long totalTime = end - start;
             sum += totalTime;
             System.out.printf("%d%n", totalTime);
         }
         System.out.printf("Average: %.2f, Total: %d%n", sum / 10f, sum);
-
     }
+
 }
