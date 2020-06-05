@@ -44,7 +44,14 @@ public class Runner implements Comparable<Runner> {
 
     @Override
     public String toString() {
-        return String.format("%s %s: %s", firstName, lastName, overallTime);
+        return String.format(
+                "%s %s: %d:%d:%d",
+                firstName,
+                lastName,
+                overallTime.toHoursPart(),
+                overallTime.toMinutesPart(),
+                overallTime.toSecondsPart()
+        );
     }
 
     @Override
