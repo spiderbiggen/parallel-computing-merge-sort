@@ -10,7 +10,7 @@ import java.util.List;
 @RunWith(Parameterized.class)
 public class ThreadsAndLocksIncreasing extends IncreasingSizeTest {
 
-    public ThreadsAndLocksIncreasing(List<Runner> input) {
+    public ThreadsAndLocksIncreasing(String input) {
         super(input);
         sorter = new MergeSortTL<>();
     }

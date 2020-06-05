@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -25,18 +26,18 @@ public abstract class IncreasingSizeTest {
     private final List<Runner> input;
 
     @Parameterized.Parameters
-    public static List<List<Runner>> data() {
+    public static List<String> data() {
          return Arrays.asList(
-                readResource("/events_001000.csv"),
-                readResource("/events_002000.csv"),
-                readResource("/events_004000.csv"),
-                readResource("/events_008000.csv"),
-                readResource("/events_016000.csv"),
-                readResource("/events_032000.csv"),
-                readResource("/events_064000.csv"),
-                readResource("/events_128000.csv"),
-                readResource("/events_256000.csv"),
-                readResource("/events_512000.csv")
+                "/events_001000.csv",
+                "/events_002000.csv",
+                "/events_004000.csv",
+                "/events_008000.csv",
+                "/events_016000.csv",
+                "/events_032000.csv",
+                "/events_064000.csv",
+                "/events_128000.csv",
+                "/events_256000.csv",
+                "/events_512000.csv"
         );
     }
 
@@ -49,8 +50,8 @@ public abstract class IncreasingSizeTest {
         }
     }
 
-    public IncreasingSizeTest(List<Runner> input) {
-        this.input = input;
+    public IncreasingSizeTest(String input) {
+        this.input = readResource(input);
     }
 
     @Test
@@ -63,19 +64,14 @@ public abstract class IncreasingSizeTest {
             final long start = System.currentTimeMillis();
             List<Runner> result = sorter.sort(input);
             final long end = System.currentTimeMillis();
+            if(result == null) {
+                System.out.println("using result");
+            }
             final long totalTime = end - start;
-            validateSort(result);
             sum += totalTime;
             System.out.printf("%d%n", totalTime);
         }
         System.out.printf("Average: %.2f, Total: %d%n", sum / 10f, sum);
     }
 
-    private void validateSort(List<Runner> result) {
-        for (int i = 0; i < result.size() - 1; i++) {
-            final Runner current = result.get(i);
-            final Runner next = result.get(i + 1);
-            assertTrue("Current: " + current + ". Next: " + next, current.compareTo(next) <= 0);
-        }
-    }
 }
