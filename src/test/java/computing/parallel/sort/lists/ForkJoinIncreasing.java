@@ -11,8 +11,8 @@ import java.util.List;
 @RunWith(Parameterized.class)
 public class ForkJoinIncreasing extends IncreasingSizeTest {
 
-    public ForkJoinIncreasing(List<Runner> input, List<Runner> expected) {
-        super(input, expected);
+    public ForkJoinIncreasing(List<Runner> input) {
+        super(input);
         sorter = new MergeSortForkJoin<>();
     }
 }

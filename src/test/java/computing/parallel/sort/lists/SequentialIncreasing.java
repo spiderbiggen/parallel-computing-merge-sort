@@ -10,8 +10,8 @@ import java.util.List;
 @RunWith(Parameterized.class)
 public class SequentialIncreasing extends IncreasingSizeTest {
 
-    public SequentialIncreasing(List<Runner> input, List<Runner> expected) {
-        super(input, expected);
+    public SequentialIncreasing(List<Runner> input) {
+        super(input);
         sorter = new MergeSort<>();
     }
 }
