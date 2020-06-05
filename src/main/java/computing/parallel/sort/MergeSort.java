@@ -7,10 +7,6 @@ public class MergeSort<T extends Comparable<T>> extends MergeSortBase<T> impleme
 
     @Override
     public List<T> sort(List<T> list) {
-        return sort(list, 0);
-    }
-
-    public List<T> sort(List<T> list, int depth) {
         if (list.size() <= 1) return list;
         Map<String, List<T>> lists = split(list);
         return merge(sort(lists.get("left")), sort(lists.get("right")));
