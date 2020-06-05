@@ -1,5 +1,6 @@
 package computing.parallel.sort.lists;
 
+import computing.parallel.sort.MergeSortBase;
 import computing.parallel.sort.MergeSortTest;
 import computing.parallel.sort.Runner;
 import computing.parallel.sort.Sorter;
@@ -54,6 +55,7 @@ public abstract class IncreasingSizeTest {
 
     @Test
     public void sort() {
+        System.out.printf("Running tests using %d threads%n", MergeSortBase.MAX_THREADS);
         System.out.printf("%d%n", input.size());
         long sum = 0;
         for (int i = 0; i < 10; i++) {
