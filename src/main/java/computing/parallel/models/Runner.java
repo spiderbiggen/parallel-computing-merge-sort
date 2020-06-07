@@ -1,11 +1,14 @@
-package computing.parallel.sort;
+package computing.parallel.models;
 
 import computing.parallel.sort.util.CSVParser;
 
+import java.io.Serializable;
 import java.time.Duration;
 import java.util.Objects;
 
-public class Runner implements Comparable<Runner> {
+public class Runner implements Comparable<Runner>, Serializable {
+    static final long serialVersionUID = 48L;
+
     private final String firstName;
     private final String lastName;
     private final int racesCount;

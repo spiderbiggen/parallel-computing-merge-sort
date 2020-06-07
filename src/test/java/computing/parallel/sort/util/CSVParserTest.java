@@ -1,6 +1,6 @@
 package computing.parallel.sort.util;
 
-import computing.parallel.sort.Runner;
+import computing.parallel.models.Runner;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;

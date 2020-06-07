@@ -1,10 +1,10 @@
 package computing.parallel.sort;
 
+import computing.parallel.models.Runner;
 import computing.parallel.sort.util.CSVParser;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.time.Duration;
 import java.util.List;
 
 import static computing.parallel.sort.util.SortTest.sortTest;

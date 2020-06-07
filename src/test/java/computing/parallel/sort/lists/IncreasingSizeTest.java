@@ -2,7 +2,7 @@ package computing.parallel.sort.lists;
 
 import computing.parallel.sort.MergeSortBase;
 import computing.parallel.sort.MergeSortTest;
-import computing.parallel.sort.Runner;
+import computing.parallel.models.Runner;
 import computing.parallel.sort.Sorter;
 import computing.parallel.sort.util.CSVParser;
 import org.junit.Test;
@@ -10,10 +10,7 @@ import org.junit.runners.Parameterized;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
