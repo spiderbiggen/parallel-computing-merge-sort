@@ -53,6 +53,6 @@ public class MergeSortTest {
     public void sortMessaging() throws IOException, JMSException {
         System.gc();
         Sorter<Runner> sorter = new MergeSortMessaging<>();
-        sortTest(unsorted, sorter, "Fork Join");
+        sortTest(unsorted, sorter, "Messaging");
     }
 }
