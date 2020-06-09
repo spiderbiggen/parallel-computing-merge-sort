@@ -34,7 +34,7 @@ public class Master<T extends Comparable<T> & Serializable> extends MqConnection
         if (workers != null) {
             throw new UnsupportedOperationException("Workers should be null before creating new worker processes");
         }
-        int numWorkers = MergeSortBase.MAX_THREADS - 1;
+        int numWorkers = Math.max(MergeSortBase.MAX_THREADS - 1, 1);
         workers = new Process[numWorkers];
         String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
         String classPath = System.getProperty("java.class.path");
@@ -45,7 +45,13 @@ public class Master<T extends Comparable<T> & Serializable> extends MqConnection
             workers[childId] = child.inheritIO().start();
             System.out.printf("%s %s%n", Worker.class.getName(), workers[childId]);
         }
-        Thread closeChildThread = new Thread(this::stopWorkers);
+        final Process[] fWorkers = workers;
+        Thread closeChildThread = new Thread(() -> {
+            for (Process fWorker : fWorkers) {
+                fWorker.destroyForcibly();
+                System.out.println(fWorker);
+            }
+        });
         Runtime.getRuntime().addShutdownHook(closeChildThread);
     }
 
@@ -88,6 +94,7 @@ public class Master<T extends Comparable<T> & Serializable> extends MqConnection
                 }
             } catch (JMSException | OutOfMemoryError e) {
                 e.printStackTrace();
+                System.out.println(e);
                 System.exit(-1);
             }
         });
