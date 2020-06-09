@@ -1,19 +1,16 @@
 package computing.parallel.sort;
 
+import computing.parallel.sort.messaging.Master;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.jms.JMSException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 import static computing.parallel.sort.util.SortTest.sortTest;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class MergeSortIntTest {
 
@@ -22,7 +19,7 @@ public class MergeSortIntTest {
     @BeforeClass
     public static void setUp() throws Exception {
         Random random = new Random(5454);
-        final Integer[] ints = new Integer[10];
+        final Integer[] ints = new Integer[1024000];
         Arrays.parallelSetAll(ints, operand -> random.nextInt());
         System.out.printf("Sorting %d%n elements", ints.length);
         unsorted = Arrays.asList(ints);
@@ -57,9 +54,9 @@ public class MergeSortIntTest {
     }
 
     @Test
-    public void sortMessaging() throws RemoteException, JMSException {
+    public void sortMessaging() throws IOException, JMSException {
         System.gc();
-        Sorter<Integer> sorter = new MergeSortMessaging<>();
+        MergeSortMessaging<Integer> sorter = new MergeSortMessaging<>();
         sortTest(unsorted, sorter, "Messaging");
     }
 }

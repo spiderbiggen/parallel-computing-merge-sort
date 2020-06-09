@@ -1,7 +1,6 @@
 package computing.parallel.sort.messaging.tasks;
 
 import computing.parallel.sort.MergeSort;
-import computing.parallel.sort.MergeSortBase;
 import computing.parallel.sort.messaging.MqConnection;
 
 import javax.jms.Destination;
@@ -30,7 +29,6 @@ public class SplitTask<T extends Comparable<T> & Serializable> extends MergeSort
 
     @Override
     public void process(MqConnection connection, Message message) throws JMSException {
-//        System.out.printf("SplitTask#process %d: %s%n", list.size(), list);
         final Destination replyTo = message.getJMSReplyTo();
         if (list.size() <= 1) {
             ObjectMessage msg = connection.session.createObjectMessage(new ListTask<T>(list, parents, id));

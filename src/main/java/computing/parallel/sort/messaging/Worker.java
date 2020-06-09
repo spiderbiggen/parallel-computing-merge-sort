@@ -27,7 +27,7 @@ public class Worker extends MqConnection {
                     task.process(this, message);
                 }
             }
-        } catch (JMSException e) {
+        } catch (JMSException | OutOfMemoryError e) {
             e.printStackTrace();
         }
     }

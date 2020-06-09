@@ -25,7 +25,6 @@ public class ListTask<T extends Comparable<T> & Serializable> extends MergeSortB
 
     @Override
     public void process(MqConnection connection, Message message) {
-//        System.out.println("ListTask#process " + list.size());
         // Do nothing
     }
 

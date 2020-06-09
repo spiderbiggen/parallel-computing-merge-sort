@@ -1,5 +1,6 @@
 package computing.parallel.sort.messaging;
 
+import computing.parallel.sort.MergeSortBase;
 import computing.parallel.sort.messaging.tasks.ListTask;
 import computing.parallel.sort.messaging.tasks.MergeTask;
 import computing.parallel.sort.messaging.tasks.SplitTask;
@@ -10,22 +11,50 @@ import javax.jms.MessageConsumer;
 import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.Session;
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 public class Master<T extends Comparable<T> & Serializable> extends MqConnection {
+    private Process[] workers;
     public Master() throws RemoteException {
     }
 
     public Master(String url, String queue) throws RemoteException {
         super(url, queue);
+    }
+
+    public void createWorkers() throws IOException {
+        if (workers != null) {
+            throw new UnsupportedOperationException("Workers should be null before creating new worker processes");
+        }
+        int numWorkers = MergeSortBase.MAX_THREADS - 1;
+        workers = new Process[numWorkers];
+        String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+        String classPath = System.getProperty("java.class.path");
+        for (int childId = 0; childId < numWorkers; childId++) {
+            ProcessBuilder child = new ProcessBuilder(
+                    javaBin, "-classpath", classPath, Worker.class.getName()
+            );
+            workers[childId] = child.inheritIO().start();
+            System.out.printf("%s %s%n", Worker.class.getName(), workers[childId]);
+        }
+        Thread closeChildThread = new Thread(this::stopWorkers);
+        Runtime.getRuntime().addShutdownHook(closeChildThread);
+    }
+
+    public void stopWorkers() {
+        for (Process worker : workers) {
+            worker.destroyForcibly();
+            System.out.println(worker);
+        }
+        workers = null;
     }
 
     public List<T> sort(List<T> list) throws JMSException {
@@ -57,8 +86,9 @@ public class Master<T extends Comparable<T> & Serializable> extends MqConnection
                 } else {
                     System.out.println("stuk");
                 }
-            } catch (JMSException e) {
+            } catch (JMSException | OutOfMemoryError e) {
                 e.printStackTrace();
+                System.exit(-1);
             }
         });
 

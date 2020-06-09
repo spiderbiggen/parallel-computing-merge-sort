@@ -5,11 +5,11 @@ import computing.parallel.sort.util.CSVParser;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.jms.JMSException;
+import java.io.IOException;
 import java.util.List;
 
 import static computing.parallel.sort.util.SortTest.sortTest;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class MergeSortTest {
 
@@ -46,6 +46,13 @@ public class MergeSortTest {
     public void sortForkJoin() {
         System.gc();
         Sorter<Runner> sorter = new MergeSortForkJoin<>();
+        sortTest(unsorted, sorter, "Fork Join");
+    }
+
+    @Test
+    public void sortMessaging() throws IOException, JMSException {
+        System.gc();
+        Sorter<Runner> sorter = new MergeSortMessaging<>();
         sortTest(unsorted, sorter, "Fork Join");
     }
 }

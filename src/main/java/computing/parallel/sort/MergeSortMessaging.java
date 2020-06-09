@@ -3,16 +3,17 @@ package computing.parallel.sort;
 import computing.parallel.sort.messaging.Master;
 
 import javax.jms.JMSException;
+import java.io.IOException;
 import java.io.Serializable;
-import java.rmi.RemoteException;
 import java.util.List;
 
 public class MergeSortMessaging<T extends Comparable<T> & Serializable> extends MergeSortBase<T> implements Sorter<T> {
-    private Master<T> masterService;
+    private final Master<T> masterService;
 
-    public MergeSortMessaging() throws RemoteException, JMSException {
+    public MergeSortMessaging() throws IOException, JMSException {
         this.masterService = new Master<>();
         this.masterService.connect();
+        this.masterService.createWorkers();
     }
 
     @Override
@@ -23,5 +24,11 @@ public class MergeSortMessaging<T extends Comparable<T> & Serializable> extends 
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        masterService.stopWorkers();
+        super.finalize();
     }
 }
