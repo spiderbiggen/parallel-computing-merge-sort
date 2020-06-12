@@ -17,7 +17,7 @@ public class MergeSortTest {
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        unsorted = CSVParser.parse(MergeSortTest.class.getResourceAsStream("/events_758675.csv"), Runner::new);
+        unsorted = CSVParser.parse(MergeSortTest.class.getResourceAsStream("/events_512000.csv"), Runner::new);
         assert unsorted != null;
     }
 
