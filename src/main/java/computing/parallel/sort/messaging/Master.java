@@ -68,9 +68,9 @@ public class Master<T extends Comparable<T> & Serializable> extends MqConnection
         Queue tempQueue = session.createTemporaryQueue();
         Queue finalQueue = session.createTemporaryQueue();
         SplitTask<T> initialTask = new SplitTask<T>(list, new ArrayList<>(), UUID.randomUUID());
-        ObjectMessage message = session.createObjectMessage(initialTask);
+        Message message = session.createMessage();
         message.setJMSReplyTo(tempQueue);
-        getProducer().send(message);
+        initialTask.process(this, message);
 
         MessageConsumer tempConsumer = session.createConsumer(tempQueue);
         tempConsumer.setMessageListener(tempMessage -> {
