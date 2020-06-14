@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Phaser;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Master<T extends Comparable<T> & Serializable> extends MqConnection {
     private Process[] workers;
@@ -67,23 +69,30 @@ public class Master<T extends Comparable<T> & Serializable> extends MqConnection
     public List<T> sort(List<T> list) throws JMSException {
         Map<UUID, ListTask<T>> a = new ConcurrentHashMap<>();
         Queue tempQueue = session.createTemporaryQueue();
-        Queue finalQueue = session.createTemporaryQueue();
         SplitTask<T> initialTask = new SplitTask<T>(list, new ArrayList<>(), UUID.randomUUID());
         Message message = session.createMessage();
         message.setJMSReplyTo(tempQueue);
         initialTask.process(this, message);
 
         MessageConsumer tempConsumer = session.createConsumer(tempQueue);
+        final AtomicReference<List<T>> result = new AtomicReference<>();
+        final Phaser phaser = new Phaser(2);
         tempConsumer.setMessageListener(tempMessage -> {
             try {
                 ObjectMessage objectMessage = (ObjectMessage) tempMessage;
                 if (objectMessage.getObject() instanceof ListTask) {
                     ListTask<T> task = (ListTask<T>) objectMessage.getObject();
                     final UUID taskId = task.getId();
-                    if (task.getList().size() == list.size()) {
-                        getEmptyProducer().send(finalQueue, tempMessage);
-                    } else if (a.containsKey(taskId)) {
-                        MergeTask<T> mergeTask = new MergeTask<>(a.remove(taskId).getList(), task.getList(), task.getParents());
+                    final List<T> right = task.getList();
+                    if (a.containsKey(taskId)) {
+                        final List<T> left = a.remove(taskId).getList();
+                        MergeTask<T> mergeTask = new MergeTask<>(left, right, task.getParents());
+                        if (left.size() + right.size() >= list.size()) {
+                            result.set(mergeTask.merge());
+                            tempConsumer.close();
+                            phaser.arrive();
+                            return;
+                        }
                         Message msg = session.createObjectMessage(mergeTask);
                         msg.setJMSReplyTo(tempQueue);
                         getProducer().send(msg);
@@ -100,16 +109,7 @@ public class Master<T extends Comparable<T> & Serializable> extends MqConnection
                 System.exit(-1);
             }
         });
-
-        Session finalSession = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        MessageConsumer finalConsumer = finalSession.createConsumer(finalQueue);
-        finalConsumer.setMessageListener(null);
-        ObjectMessage objectMessage = (ObjectMessage) finalConsumer.receive();
-        if (objectMessage.getObject() instanceof ListTask) {
-            ListTask<T> task = (ListTask<T>) objectMessage.getObject();
-            return task.getList();
-        } else {
-            return list;
-        }
+        phaser.arriveAndAwaitAdvance();
+        return result.get();
     }
 }
