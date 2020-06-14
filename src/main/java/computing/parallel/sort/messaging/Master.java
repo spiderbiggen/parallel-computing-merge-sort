@@ -56,6 +56,7 @@ public class Master<T extends Comparable<T> & Serializable> extends MqConnection
     }
 
     public void stopWorkers() {
+        if (workers == null) return;
         for (Process worker : workers) {
             worker.destroyForcibly();
             System.out.println(worker);
@@ -90,7 +91,8 @@ public class Master<T extends Comparable<T> & Serializable> extends MqConnection
                         a.put(taskId, task);
                     }
                 } else {
-                    System.out.println("stuk");
+                    System.out.println("Something went wrong in processing");
+                    System.exit(-1);
                 }
             } catch (JMSException | OutOfMemoryError e) {
                 e.printStackTrace();
