@@ -36,7 +36,7 @@ public class Master<T extends Comparable<T> & Serializable> extends MqConnection
         if (workers != null) {
             throw new UnsupportedOperationException("Workers should be null before creating new worker processes");
         }
-        int numWorkers = Math.max(MergeSortBase.MAX_THREADS - 1, 1);
+        int numWorkers = MergeSortBase.MAX_THREADS - 1;
         workers = new Process[numWorkers];
         String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
         String classPath = System.getProperty("java.class.path");
@@ -84,12 +84,16 @@ public class Master<T extends Comparable<T> & Serializable> extends MqConnection
                     ListTask<T> task = (ListTask<T>) objectMessage.getObject();
                     final UUID taskId = task.getId();
                     final List<T> right = task.getList();
+                    if (right.size() >= list.size()) {
+                        result.set(right);
+                        phaser.arrive();
+                        return;
+                    }
                     if (a.containsKey(taskId)) {
                         final List<T> left = a.remove(taskId).getList();
                         MergeTask<T> mergeTask = new MergeTask<>(left, right, task.getParents());
                         if (left.size() + right.size() >= list.size()) {
                             result.set(mergeTask.merge());
-                            tempConsumer.close();
                             phaser.arrive();
                             return;
                         }

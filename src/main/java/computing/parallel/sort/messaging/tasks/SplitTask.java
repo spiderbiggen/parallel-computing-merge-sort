@@ -3,7 +3,6 @@ package computing.parallel.sort.messaging.tasks;
 import computing.parallel.sort.MergeSort;
 import computing.parallel.sort.messaging.MqConnection;
 
-import javax.jms.Connection;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
