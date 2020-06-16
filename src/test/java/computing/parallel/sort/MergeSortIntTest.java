@@ -1,6 +1,5 @@
 package computing.parallel.sort;
 
-import computing.parallel.sort.messaging.Master;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -19,7 +18,7 @@ public class MergeSortIntTest {
     @BeforeClass
     public static void setUp() throws Exception {
         Random random = new Random(5454);
-        final Integer[] ints = new Integer[1024000];
+        final Integer[] ints = new Integer[1_024_000];
         Arrays.parallelSetAll(ints, operand -> random.nextInt());
         System.out.printf("Sorting %d%n elements", ints.length);
         unsorted = Arrays.asList(ints);

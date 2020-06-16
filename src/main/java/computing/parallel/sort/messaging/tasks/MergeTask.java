@@ -27,15 +27,9 @@ public class MergeTask<T extends Comparable<T> & Serializable> extends MergeSort
 
     @Override
     public void process(MqConnection connection, Message message) throws JMSException {
-        long start = System.currentTimeMillis();
-        try {
-            List<T> result = this.merge();
-            ObjectMessage msg = connection.session.createObjectMessage(new ListTask<T>(result, getParents(), getId()));
-            connection.getEmptyProducer().send(message.getJMSReplyTo(), msg);
-        } finally {
-            long end = System.currentTimeMillis();
-            System.out.printf("Merge#process %d + %d took %dms%n", left.size(), right.size(), end - start);
-        }
+        List<T> result = this.merge();
+        ObjectMessage msg = connection.session.createObjectMessage(new ListTask<T>(result, getParents(), getId()));
+        connection.getEmptyProducer().send(message.getJMSReplyTo(), msg);
     }
 
     public List<T> merge() {

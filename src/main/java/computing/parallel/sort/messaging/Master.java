@@ -45,13 +45,11 @@ public class Master<T extends Comparable<T> & Serializable> extends MqConnection
                     javaBin, "-classpath", classPath, Worker.class.getName()
             );
             workers[childId] = child.inheritIO().start();
-            System.out.printf("%s %s%n", Worker.class.getName(), workers[childId]);
         }
         final Process[] fWorkers = workers;
         Thread closeChildThread = new Thread(() -> {
             for (Process fWorker : fWorkers) {
                 fWorker.destroyForcibly();
-                System.out.println(fWorker);
             }
         });
         Runtime.getRuntime().addShutdownHook(closeChildThread);

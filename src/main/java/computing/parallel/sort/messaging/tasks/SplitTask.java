@@ -29,14 +29,8 @@ public class SplitTask<T extends Comparable<T> & Serializable> extends MergeSort
 
     @Override
     public void process(MqConnection connection, Message message) throws JMSException {
-        long start = System.currentTimeMillis();
-        try {
-            final Destination replyTo = message.getJMSReplyTo();
-            sequentialSplit(list, parents, id, connection, replyTo);
-        } finally {
-            long end = System.currentTimeMillis();
-            System.out.printf("SplitTask#process %d took %dms%n", list.size(), end - start);
-        }
+        final Destination replyTo = message.getJMSReplyTo();
+        sequentialSplit(list, parents, id, connection, replyTo);
     }
 
     public void sequentialSplit(List<T> localList, List<UUID> localParent, UUID localId, MqConnection connection, Destination replyTo) throws JMSException {
