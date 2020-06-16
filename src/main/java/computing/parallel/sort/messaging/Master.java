@@ -114,4 +114,10 @@ public class Master<T extends Comparable<T> & Serializable> extends MqConnection
         phaser.arriveAndAwaitAdvance();
         return result.get();
     }
+
+    @Override
+    protected void finalize() throws Throwable {
+        stopWorkers();
+        super.finalize();
+    }
 }

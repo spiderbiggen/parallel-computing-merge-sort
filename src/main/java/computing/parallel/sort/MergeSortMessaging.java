@@ -25,10 +25,4 @@ public class MergeSortMessaging<T extends Comparable<T> & Serializable> extends 
         }
         return null;
     }
-
-    @Override
-    protected void finalize() throws Throwable {
-        masterService.stopWorkers();
-        super.finalize();
-    }
 }
