@@ -1,17 +1,16 @@
 package computing.parallel.sort;
 
+import computing.parallel.sort.messaging.Master;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.ArrayList;
+import javax.jms.JMSException;
+import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 import static computing.parallel.sort.util.SortTest.sortTest;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class MergeSortIntTest {
 
@@ -52,5 +51,12 @@ public class MergeSortIntTest {
         System.gc();
         Sorter<Integer> sorter = new MergeSortForkJoin<>();
         sortTest(unsorted, sorter, "Fork Join");
+    }
+
+    @Test
+    public void sortMessaging() throws IOException, JMSException {
+        System.gc();
+        MergeSortMessaging<Integer> sorter = new MergeSortMessaging<>();
+        sortTest(unsorted, sorter, "Messaging");
     }
 }

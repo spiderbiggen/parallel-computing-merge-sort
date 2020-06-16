@@ -1,15 +1,15 @@
 package computing.parallel.sort;
 
+import computing.parallel.models.Runner;
 import computing.parallel.sort.util.CSVParser;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.time.Duration;
+import javax.jms.JMSException;
+import java.io.IOException;
 import java.util.List;
 
 import static computing.parallel.sort.util.SortTest.sortTest;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class MergeSortTest {
 
@@ -17,7 +17,7 @@ public class MergeSortTest {
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        unsorted = CSVParser.parse(MergeSortTest.class.getResourceAsStream("/events_758675.csv"), Runner::new);
+        unsorted = CSVParser.parse(MergeSortTest.class.getResourceAsStream("/events_512000.csv"), Runner::new);
         assert unsorted != null;
     }
 
@@ -47,5 +47,12 @@ public class MergeSortTest {
         System.gc();
         Sorter<Runner> sorter = new MergeSortForkJoin<>();
         sortTest(unsorted, sorter, "Fork Join");
+    }
+
+    @Test
+    public void sortMessaging() throws IOException, JMSException {
+        System.gc();
+        Sorter<Runner> sorter = new MergeSortMessaging<>();
+        sortTest(unsorted, sorter, "Messaging");
     }
 }
