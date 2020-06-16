@@ -11,15 +11,11 @@ public class MergeSortBase<T extends Comparable<T>> {
     public static final int MAX_DEPTH = (int) Math.ceil(Math.log(MAX_THREADS) / Math.log(2));
 
     protected Map<String, List<T>> split(List<T> baseList) {
-        final int middleIndex = findMiddle(baseList);
+        final int middleIndex = (baseList.size() + 1) / 2;
         HashMap<String, List<T>> lists = new HashMap<>();
         lists.put("left", new ArrayList<>(baseList.subList(0, middleIndex)));
         lists.put("right", new ArrayList<>(baseList.subList(middleIndex, baseList.size())));
         return lists;
-    }
-
-    int findMiddle(List<T> list) {
-        return (list.size() + 1) / 2;
     }
 
     protected List<T> merge(List<T> left, List<T> right) {
